@@ -1,10 +1,16 @@
+from gc import callbacks
 import tkinter as tk
+import re
 
 def clear():
     for widgets in frame.winfo_children():
       widgets.destroy()
     for widgets in bottomframe.winfo_children():
         widgets.destroy()
+
+class mainpage:
+    def __init__(self):
+        pass
 
 class startuppage:
     def __init__(self):
@@ -19,6 +25,8 @@ class startuppage:
 class loginpage:
     def __init__(self):
         clear()
+        self.logintext = tk.Label(frame, text="Login to your account")
+        self.logintext.pack()
         self.usernametext = tk.Label(frame, text="username")
         self.usernametext.pack()
         self.username = tk.Entry(frame)
@@ -27,8 +35,10 @@ class loginpage:
         self.passwordtext.pack()
         self.password = tk.Entry(frame)
         self.password.pack()
-        self.submit = tk.Button(frame, text="submit", command=self.logintest)
-        self.submit.pack()
+        self.signup = tk.Button(bottomframe, text="don't have an account", command=signuppage)
+        self.signup.grid(row=1,column=1)
+        self.submit = tk.Button(bottomframe, text="submit", command=self.logintest)
+        self.submit.grid(row=1,column=2)
 
     def logintest(self):
         print(self.username.get(), self.password.get())
@@ -36,6 +46,9 @@ class loginpage:
 class signuppage:
     def __init__(self):
         clear()
+        global errormessage
+        self.signuptext = tk.Label(frame, text="Signup for an account")
+        self.signuptext.pack()
         self.usernametext = tk.Label(frame, text="username")
         self.usernametext.pack()
         self.username = tk.Entry(frame)
@@ -48,12 +61,30 @@ class signuppage:
         self.confirmpasswordtext.pack()
         self.confirmpassword = tk.Entry(frame)
         self.confirmpassword.pack()
-        self.submit = tk.Button(frame, text="submit", command=self.signuptest)
-        self.submit.pack()
+        self.login = tk.Button(bottomframe, text="already have an account", command=loginpage)
+        self.login.grid(row=1,column=1)
+        self.submit = tk.Button(bottomframe, text="submit", command=self.signuptest)
+        self.submit.grid(row=1,column=2)
+        errormessage = tk.StringVar()
+        errormessage.set("")
+        self.errormessage = tk.Label(frame, textvariable=errormessage)
+        self.errormessage.pack()
 
     def signuptest(self):
-        print(self.username.get(), self.password.get(), self.confirmpassword.get())
+        if self.password.get() != self.confirmpassword.get():
+            errormessage.set("Password does not match")
+        elif len(self.password.get()) < 8:
+            errormessage.set("Password must contain at least 8 characters")
+        elif re.search('[A-Z]', self.password.get()) is None:
+            errormessage.set("Password must contain at least 1 capital letter")
+        elif re.search('[0-9]', self.password.get()) is None:
+            errormessage.set("Password must contain at least 1 number")
+        elif re.search('[|]', self.password.get()) is not None:
+            errormessage.set("You are not allowed to use pipes ( | )")
+        else:
+            loginpage()
 
+        
 window = tk.Tk()
 frame = tk.Frame(window)
 frame.pack()
