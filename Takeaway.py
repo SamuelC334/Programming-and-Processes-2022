@@ -71,17 +71,33 @@ class signuppage:
         self.errormessage.pack()
 
     def signuptest(self):
-        if self.password.get() != self.confirmpassword.get():
+        with open("Accounts.txt") as f:
+            lines = f.readlines()
+            for line in lines:
+                if self.username.get() == line[:line.index("|")]:
+                    errormessage.set("Username has already been taken")
+                    return
+        if len(self.username.get()) < 3:
+            errormessage.set("Username must contain at least 3 characters")
+            return
+        elif self.password.get() != self.confirmpassword.get():
             errormessage.set("Password does not match")
+            return
         elif len(self.password.get()) < 8:
             errormessage.set("Password must contain at least 8 characters")
+            return
         elif re.search('[A-Z]', self.password.get()) is None:
             errormessage.set("Password must contain at least 1 capital letter")
+            return
         elif re.search('[0-9]', self.password.get()) is None:
             errormessage.set("Password must contain at least 1 number")
-        elif re.search('[|]', self.password.get()) is not None:
+            return
+        elif re.search('[|]', self.password.get()) or re.search('[|]', self.username.get()) is not None:
             errormessage.set("You are not allowed to use pipes ( | )")
+            return
         else:
+            with open("Accounts.txt", 'a+') as f:
+                f.write(self.username.get() + "|" + self.password.get() + "\n")
             loginpage()
 
         
