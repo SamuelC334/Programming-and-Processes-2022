@@ -1,4 +1,3 @@
-from gc import callbacks
 import tkinter as tk
 import re
 
@@ -10,6 +9,7 @@ def clear():
 
 class mainpage:
     def __init__(self):
+        clear()
         pass
 
 class startuppage:
@@ -25,6 +25,7 @@ class startuppage:
 class loginpage:
     def __init__(self):
         clear()
+        global errormessage
         self.logintext = tk.Label(frame, text="Login to your account")
         self.logintext.pack()
         self.usernametext = tk.Label(frame, text="username")
@@ -39,9 +40,20 @@ class loginpage:
         self.signup.grid(row=1,column=1)
         self.submit = tk.Button(bottomframe, text="submit", command=self.logintest)
         self.submit.grid(row=1,column=2)
+        errormessage = tk.StringVar()
+        errormessage.set("")
+        self.errormessage = tk.Label(frame, textvariable=errormessage)
+        self.errormessage.pack()
 
     def logintest(self):
-        print(self.username.get(), self.password.get())
+        with open("Accounts.txt") as f:
+            lines = f.readlines()
+            for line in lines:
+                if self.username.get() == line[:line.index("|")]:
+                    if self.password.get() == line[line.index("|")+1:-1]:
+                        mainpage()
+            errormessage.set("Username or password is incorrect, please try again")
+            return
 
 class signuppage:
     def __init__(self):
