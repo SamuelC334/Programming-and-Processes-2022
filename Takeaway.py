@@ -1,29 +1,61 @@
 import tkinter as tk
 import re
+from PIL import ImageTk, Image
+
 
 def clear():
+    """Clears all widgets on the screen"""
     for widgets in frame.winfo_children():
-      widgets.destroy()
+        widgets.destroy()
     for widgets in bottomframe.winfo_children():
         widgets.destroy()
 
+
 class mainpage:
+    """The main shopping menu with item images, names and prices"""
     def __init__(self):
         clear()
-        pass
+        global image1, image2, image3, image4, image5, image6
+        image1 = ImageTk.PhotoImage(Image.open("Images\Beef burger.png"))
+        image2 = ImageTk.PhotoImage(Image.open("Images\Chicken burger.png"))
+        image3 = ImageTk.PhotoImage(Image.open("Images\Ham burger.png"))
+        image4 = ImageTk.PhotoImage(Image.open("Images\Bacon egg burger.png"))
+        image5 = ImageTk.PhotoImage(Image.open("Images\Fish burger.png"))
+        image6 = ImageTk.PhotoImage(Image.open("Images\Vege burger.png"))
+        self.panel1 = tk.Label(frame, image=image1)
+        self.panel1.pack(side=tk.LEFT)
+        self.panel2 = tk.Label(frame, image=image2)
+        self.panel2.pack(side=tk.RIGHT)
+        self.panel3 = tk.Label(frame, image=image3)
+        self.panel3.pack(side=tk.LEFT)
+        self.panel4 = tk.Label(bottomframe, image=image4)
+        self.panel4.pack(side=tk.RIGHT)
+        self.panel5 = tk.Label(bottomframe, image=image5)
+        self.panel5.pack(side=tk.LEFT)
+        self.panel6 = tk.Label(bottomframe, image=image6)
+        self.panel6.pack(side=tk.RIGHT)
+
 
 class startuppage:
+    """The initial page with a signup and login button"""
     def __init__(self):
+        """Create signup and login buttons"""
         clear()
         self.question1 = tk.Label(frame, text="Log in or sign up?")
         self.question1.pack()
-        self.button1 = tk.Button(bottomframe, text="Sign up", command=signuppage)
-        self.button1.grid(row=2,column=1)
-        self.button2 = tk.Button(bottomframe, text="Login", command=loginpage)
-        self.button2.grid(row=2,column=2)
+        self.button1 = tk.Button(bottomframe, text="Sign up",
+                                 command=signuppage)
+        self.button1.grid(row=2, column=1)
+        self.button2 = tk.Button(bottomframe, text="Login",
+                                 command=loginpage)
+        self.button2.grid(row=2, column=2)
+
 
 class loginpage:
+    """The login page with input boxes, and a register and submit button"""
     def __init__(self):
+        """Create username and password input boxes with labels on top,
+        create submit button and signup button and an error message label"""
         clear()
         global errormessage
         self.logintext = tk.Label(frame, text="Login to your account")
@@ -36,27 +68,35 @@ class loginpage:
         self.passwordtext.pack()
         self.password = tk.Entry(frame)
         self.password.pack()
-        self.signup = tk.Button(bottomframe, text="don't have an account", command=signuppage)
-        self.signup.grid(row=1,column=1)
-        self.submit = tk.Button(bottomframe, text="submit", command=self.logintest)
-        self.submit.grid(row=1,column=2)
+        self.signup = tk.Button(bottomframe, text="don't have an account",
+                                command=signuppage)
+        self.signup.grid(row=1, column=1)
+        self.submit = tk.Button(bottomframe, text="submit",
+                                command=self.logintest)
+        self.submit.grid(row=1, column=2)
         errormessage = tk.StringVar()
         errormessage.set("")
         self.errormessage = tk.Label(frame, textvariable=errormessage)
         self.errormessage.pack()
 
     def logintest(self):
+        """Search the external accounts file for matching credentials"""
         with open("Accounts.txt") as f:
             lines = f.readlines()
             for line in lines:
                 if self.username.get() == line[:line.index("|")]:
                     if self.password.get() == line[line.index("|")+1:-1]:
                         mainpage()
-            errormessage.set("Username or password is incorrect, please try again")
+            errormessage.set("Username or password is incorrect,"
+                             " please try again")
             return
 
+
 class signuppage:
+    """The signup page with input boxes, and a login and submit button"""
     def __init__(self):
+        """Create username, password and confirm input boxes with labels on top,
+        create submit button and signup button and an error message label"""
         clear()
         global errormessage
         self.signuptext = tk.Label(frame, text="Signup for an account")
@@ -73,16 +113,19 @@ class signuppage:
         self.confirmpasswordtext.pack()
         self.confirmpassword = tk.Entry(frame)
         self.confirmpassword.pack()
-        self.login = tk.Button(bottomframe, text="already have an account", command=loginpage)
-        self.login.grid(row=1,column=1)
-        self.submit = tk.Button(bottomframe, text="submit", command=self.signuptest)
-        self.submit.grid(row=1,column=2)
+        self.login = tk.Button(bottomframe, text="already have an account",
+                               command=loginpage)
+        self.login.grid(row=1, column=1)
+        self.submit = tk.Button(bottomframe, text="submit",
+                                command=self.signuptest)
+        self.submit.grid(row=1, column=2)
         errormessage = tk.StringVar()
         errormessage.set("")
         self.errormessage = tk.Label(frame, textvariable=errormessage)
         self.errormessage.pack()
 
     def signuptest(self):
+        """Check validity of username and password"""
         with open("Accounts.txt") as f:
             lines = f.readlines()
             for line in lines:
@@ -104,7 +147,10 @@ class signuppage:
         elif re.search('[0-9]', self.password.get()) is None:
             errormessage.set("Password must contain at least 1 number")
             return
-        elif re.search('[|]', self.password.get()) or re.search('[|]', self.username.get()) is not None:
+        elif re.search('[|]', self.password.get()) is not None:
+            errormessage.set("You are not allowed to use pipes ( | )")
+            return
+        elif re.search('[|]', self.username.get()) is not None:
             errormessage.set("You are not allowed to use pipes ( | )")
             return
         else:
@@ -112,7 +158,7 @@ class signuppage:
                 f.write(self.username.get() + "|" + self.password.get() + "\n")
             loginpage()
 
-        
+
 window = tk.Tk()
 frame = tk.Frame(window)
 frame.pack()
