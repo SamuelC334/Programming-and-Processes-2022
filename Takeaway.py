@@ -349,7 +349,8 @@ class MainPage:
                                         number_of_fish_burger.get() +
                                         number_of_vege_burger.get())))
         self.thank_you_message = tk.Label(popup, font=("Times New Roman", 15),
-                                    text="Thank you for ordering \n at McHacker!")
+                                          text="Thank you for ordering \n "
+                                               "at McHacker!")
         self.total_label.pack()
         self.thank_you_message.pack()
 
